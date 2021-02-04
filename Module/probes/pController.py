@@ -118,7 +118,7 @@ with b0RemoteApi.RemoteApiClient('b0RemoteApi_pythonClient', 'b0RemoteApi') as c
     
     link1_pos[1] = (link1_pos[1])*180/math.pi
     link2_pos[1] = (link2_pos[1])*180/math.pi
-    # startTime = time.time()
+    startTime = time.time()
     while link1_pos[1] < 150:
         if doNextStep:
             doNextStep = False
