@@ -1,0 +1,125 @@
+<?xml version="1.0" ?>
+<robot name="Generic">
+
+<material name="silver">
+  <color rgba="0.700 0.700 0.700 1.000"/>
+</material>
+
+<link name="base_link">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-0.03383713556568889 0.001180924283257849 0.018880660330474173"/>
+    <mass value="0.05714996625312638"/>
+    <inertia ixx="1.487687965936025e-05" ixy="5.755040221064138e-10" ixz="-4.563029226697739e-09" iyy="7.567918973825277e-06" iyz="1.7112509146239148e-11" izz="8.122188129641302e-06"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <geometry>
+      <mesh filename="meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+    <material/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0 0 0"/>
+    <geometry>
+      <mesh filename="meshes/base_link.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="Radiator1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="0.014249999448657038 0.012680723651674608 -0.018800163317738986"/>
+    <mass value="0.16124586679991443"/>
+    <inertia ixx="4.657530842836423e-05" ixy="2.541098841762901e-21" ixz="0.0" iyy="3.346002868600981e-05" iyz="6.601766674757371e-11" izz="3.494393896039283e-05"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.029 0.011506 -0.037705"/>
+    <geometry>
+      <mesh filename="meshes/Radiator1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+    <material/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.029 0.011506 -0.037705"/>
+    <geometry>
+      <mesh filename="meshes/Radiator1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="Back_cap1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="0.0035195856440102947 0.012675516194023215 -0.018851096242452518"/>
+    <mass value="0.067992844033329"/>
+    <inertia ixx="1.4157922577985809e-05" ixy="2.6842768410165993e-10" ixz="2.0247632009681824e-12" iyy="7.230567429362649e-06" iyz="2.6858187067880113e-13" izz="7.483465688945659e-06"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="0.0005 0.011506 -0.037705"/>
+    <geometry>
+      <mesh filename="meshes/Back_cap1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+    <material/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="0.0005 0.011506 -0.037705"/>
+    <geometry>
+      <mesh filename="meshes/Back_cap1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<link name="Rotor1">
+  <inertial>
+    <origin rpy="0 0 0" xyz="-0.0320877919440062 -7.808603396154061e-05 1.783296928771494e-07"/>
+    <mass value="0.013181950268711023"/>
+    <inertia ixx="5.4382881473596353e-08" ixy="-2.7073284856442204e-08" ixz="0.0" iyy="4.6353478181851715e-06" iyz="1.0587911840678754e-22" izz="4.633543480520603e-06"/>
+  </inertial>
+  <visual>
+    <origin rpy="0 0 0" xyz="-0.0069 -0.001167 -0.018781"/>
+    <geometry>
+      <mesh filename="meshes/Rotor1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+    <material name="silver"/>
+    <material/>
+  </visual>
+  <collision>
+    <origin rpy="0 0 0" xyz="-0.0069 -0.001167 -0.018781"/>
+    <geometry>
+      <mesh filename="meshes/Rotor1.stl" scale="0.001 0.001 0.001"/>
+    </geometry>
+  </collision>
+</link>
+
+<joint name="Rigid4" type="fixed">
+  <origin rpy="0 0 0" xyz="-0.029 -0.011506 0.037705"/>
+  <parent link="base_link"/>
+  <child link="Radiator1"/>
+</joint>
+
+<joint name="Rigid5" type="fixed">
+  <origin rpy="0 0 0" xyz="0.0285 0.0 0.0"/>
+  <parent link="Radiator1"/>
+  <child link="Back_cap1"/>
+</joint>
+
+<joint name="Rev7" type="continuous">
+  <origin rpy="0 0 0" xyz="0.0069 0.001167 0.018781"/>
+  <parent link="base_link"/>
+  <child link="Rotor1"/>
+  <axis xyz="1.0 0.0 0.0"/>
+</joint>
+<transmission name="Rev7_tran">
+  <type>transmission_interface/SimpleTransmission</type>
+  <joint name="Rev7">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+  </joint>
+  <actuator name="Rev7_actr">
+    <hardwareInterface>PositionJointInterface</hardwareInterface>
+    <mechanicalReduction>1</mechanicalReduction>
+  </actuator>
+</transmission>
+
+</robot>
