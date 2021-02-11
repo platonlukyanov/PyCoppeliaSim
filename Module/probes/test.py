@@ -1,0 +1,2 @@
+
+print(copp.client)
