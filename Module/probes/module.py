@@ -21,12 +21,12 @@ class Coppelia:
 		self.client.simxStartSimulation(self.client.simxDefaultPublisher()) 
 	
 
-def stop_sim(self):
-	self.client.simxStopSimulation(self.client.simxDefaultPublisher())
+	def stop_sim(self):
+		self.client.simxStopSimulation(self.client.simxDefaultPublisher())
 
-def __del__(self):
-	self.stop_sim()
-	del self.client
+	def __del__(self):
+		self.stop_sim()
+		del self.client
 if __name__ == '__main__':
 	copp = Coppelia()
 	print(copp.client)
