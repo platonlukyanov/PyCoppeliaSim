@@ -2,5 +2,4 @@ from module import Coppelia
 import math
 copp = Coppelia(api_name="b0RemoteApi1")
 client = copp.client
-while True:
-	copp.set_position('Rev74', 10*180/math.pi)
+copp.move("Rev74", 180, typeof="degrees")
