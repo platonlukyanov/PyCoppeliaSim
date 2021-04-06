@@ -11,9 +11,17 @@ class Coppelia:
         self.client.simxStartSimulation(self.client.simxDefaultPublisher())
         self.call = self.client.simxServiceCall
 
-    def get_position(self, object_name):
+    def get_position(self, object_name, typeof="degrees"):
         link = self.client.simxGetObjectHandle(object_name, self.call())
-        return self.client.simxGetJointPosition(link[1], self.call())[1]
+        result = self.client.simxGetJointPosition(link[1], self.call())[1]
+        if typeof == "degrees":
+            result = math.degrees(result)
+        if typeof == "radians":
+            pass
+        elif typeof != "degrees":
+            raise ValueError('Invalid typeof "{typeof}". You should use "degrees" or "radians"'.format(typeof=typeof))
+
+        return result
 
     def set_position(self, object_name, position):
         link = self.client.simxGetObjectHandle(object_name, self.call())
@@ -30,7 +38,7 @@ class Coppelia:
             current_position = self.get_position(object_name)
             difference_position = current_position - position
             # если он меньше нуля ждем пока будет больше
-            if difference_position < 0:
+            if difference_position <= 0:
                 while position < current_position:
                     current_position = self.get_position(object_name)
                     print(current_position)
@@ -40,19 +48,24 @@ class Coppelia:
                     self.client.simxSpinOnce()  # делает следущий "шаг"
             # а иначе ждем меньше
             else:
-                while position > current_position:
+                while position >= current_position:
                     self.client.simxSetJointTargetPosition(link[1], position,
                                                            self.call())  # устанавливает угол поворота
                     self.client.simxSynchronousTrigger()  # обновляет время
                     self.client.simxSpinOnce()  # делает следущий "шаг"
 
-    print("final done")
+
 
     # else:
     #     raise ValueError('Invalid typeof "{typeof}". You should use "degrees" or "radians"'.format(typeof=typeof))
 
     def stop_sim(self):
         self.client.simxStopSimulation(self.client.simxDefaultPublisher())
+
+    def set_speed(self, object_name, speed):
+        link = self.client.simxGetObjectHandle(object_name, self.call())
+        self.client.simxSetJointTargetVelocity(link[1], speed, self.call())
+
 
     def __del__(self):
         self.stop_sim()
