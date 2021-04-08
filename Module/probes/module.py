@@ -1,6 +1,8 @@
 import b0RemoteApi
 import time
 import math
+from threading import *
+import logging
 
 
 class Coppelia:
@@ -10,6 +12,15 @@ class Coppelia:
         self.client.simxSynchronous(True)
         self.client.simxStartSimulation(self.client.simxDefaultPublisher())
         self.call = self.client.simxServiceCall
+        logging.basicConfig(filename='debug.log', level=logging.DEBUG, filemode='w',
+                            format='%(name)s - %(asctime)% - %(levelname)s - %(message)s')
+        t = Thread(target=self._timer)
+        t.start()
+
+    def _timer(self):
+        while True:
+            self.client.simxSynchronousTrigger()  # обновляет время
+            self.client.simxSpinOnce()
 
     def get_position(self, object_name, typeof="degrees"):
         link = self.client.simxGetObjectHandle(object_name, self.call())
@@ -31,33 +42,33 @@ class Coppelia:
         link = self.client.simxGetObjectHandle(object_name, self.call())
         if typeof == "degrees":
             position = math.radians(position)
-            print("position-for-degrees")
 
         if typeof == "radians":
-            # Вычисляем разницу между текущей позицией и желаемой
-            current_position = self.get_position(object_name)
-            difference_position = current_position - position
-            # если он меньше нуля ждем пока будет больше
-            if difference_position <= 0:
-                while position < current_position:
-                    current_position = self.get_position(object_name)
-                    print(current_position)
-                    self.client.simxSetJointTargetPosition(link[1], position,
-                                                           self.call())  # устанавливает угол поворота
-                    self.client.simxSynchronousTrigger()  # обновляет время
-                    self.client.simxSpinOnce()  # делает следущий "шаг"
-            # а иначе ждем меньше
-            else:
-                while position >= current_position:
-                    self.client.simxSetJointTargetPosition(link[1], position,
-                                                           self.call())  # устанавливает угол поворота
-                    self.client.simxSynchronousTrigger()  # обновляет время
-                    self.client.simxSpinOnce()  # делает следущий "шаг"
+            pass
 
-
-
-    # else:
-    #     raise ValueError('Invalid typeof "{typeof}". You should use "degrees" or "radians"'.format(typeof=typeof))
+        elif typeof not in ["radians", "degrees"]:
+            raise ValueError('Invalid typeof "{typeof}". You should use "degrees" or "radians"'.format(typeof=typeof))
+        print("position", position)
+        current_position = self.get_position(object_name)
+        difference_position = current_position - position
+        # если он меньше нуля ждем пока будет больше
+        print("diff", difference_position)
+        if difference_position <= 0:
+            print("current_position 1: ", current_position)
+            print("position 1: ", position)
+            while position < current_position:
+                current_position = self.get_position(object_name)
+                self.client.simxSetJointTargetPosition(link[1], position,
+                                                       self.call())  # устанавливает угол поворота
+        # а иначе ждем меньше
+        else:
+            print("current_position 2: ", current_position)
+            print("position 2: ", position)
+            while position >= current_position:
+                self.client.simxSetJointTargetPosition(link[1], position,
+                                                       self.call())  # устанавливает угол поворота
+                self.client.simxSynchronousTrigger()  # обновляет время
+                self.client.simxSpinOnce()  # делает следущий "шаг"
 
     def stop_sim(self):
         self.client.simxStopSimulation(self.client.simxDefaultPublisher())
@@ -66,7 +77,7 @@ class Coppelia:
         link = self.client.simxGetObjectHandle(object_name, self.call())
         self.client.simxSetJointTargetVelocity(link[1], speed, self.call())
 
-
     def __del__(self):
+
         self.stop_sim()
         del self.client
